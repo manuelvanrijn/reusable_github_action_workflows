@@ -1,0 +1,28 @@
+name: Auto merge dependabot pull requests
+
+# TOKEN SCOPE
+# The GitHub token is a [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with the following scopes:
+# `repo` for private repositories
+# `public_repo` for public repositories
+#
+# The token MUST be created from a user with push permission to the repository.
+
+on:
+  workflow_call:
+    secrets:
+      personal_access_token:
+        required: true
+
+jobs:
+  auto-merge-dependabot:
+    name: Approve and merge pending pull requests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          gh pr list --author "dependabot[bot]" --search "status:pending" --json number --jq '.[] | .number' | while read i; do
+            gh pr review $i --approve --body "@dependabot merge"
+            sleep 0.2 # looks like we have to sleep a bit or dependabot isn't picking up the comment
+          done
+        env:
+          GH_TOKEN: ${{ secrets.personal_access_token }}
