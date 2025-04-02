@@ -34,15 +34,6 @@ jobs:
     uses: manuelvanrijn/reusable_github_action_workflows/.github/workflows/auto-merge-dependabot.yml@main
     secrets:
       personal_access_token: ${{ secrets.PAT_TOKEN }}
-    # runs-on: ubuntu-24.04
-    # steps:
-    #   - uses: actions/checkout@v4
-    #   - run: |
-    #       gh pr list --author "dependabot[bot]" --search "status:pending" --json number --jq '.[] | .number' | while read i; do
-    #         gh pr review $i --approve --body "@dependabot merge"
-    #       done
-    #     env:
-    #       GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 ```
 
 ---
