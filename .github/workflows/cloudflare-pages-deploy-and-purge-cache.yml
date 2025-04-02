@@ -1,0 +1,47 @@
+name: Publish to Cloudflare Pages
+
+on:
+  workflow_call:
+    inputs:
+      cloudflare_project_name:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      purge_cache:
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      cloudflare_api_token:
+        required: true
+      cloudflare_account_id:
+        required: true
+      cloudflare_zone:
+        required: true
+      gh_token:
+        required: true
+
+jobs:
+  deploy:
+    name: Cloudflare Pages
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: build
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.cloudflare_api_token }}
+          accountId: ${{ secrets.cloudflare_account_id }}
+          command: pages deploy build --project-name=${{ inputs.cloudflare_project_name }}
+          gitHubToken: ${{ secrets.gh_token }}
+
+      - uses: nathanvaughn/actions-cloudflare-purge@v3.1.0
+        if: inputs.purge_cache == true
+        with:
+          cf_zone: "${{ secrets.cloudflare_zone }}"
+          cf_auth: "${{ secrets.cloudflare_api_token }}"
