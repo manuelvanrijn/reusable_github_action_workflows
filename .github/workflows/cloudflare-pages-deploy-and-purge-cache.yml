@@ -40,7 +40,7 @@ jobs:
           command: pages deploy build --project-name=${{ inputs.cloudflare_project_name }}
           gitHubToken: ${{ secrets.gh_token }}
 
-      - uses: nathanvaughn/actions-cloudflare-purge@v3.1.0
+      - uses: nathanvaughn/actions-cloudflare-purge@master
         if: inputs.purge_cache == true
         with:
           cf_zone: ${{ secrets.cloudflare_zone }}
