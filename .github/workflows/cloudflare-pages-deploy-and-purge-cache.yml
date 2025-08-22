@@ -43,5 +43,5 @@ jobs:
       - uses: nathanvaughn/actions-cloudflare-purge@v3.1.0
         if: inputs.purge_cache == true
         with:
-          cf_zone: "${{ secrets.cloudflare_zone }}"
-          cf_auth: "${{ secrets.cloudflare_api_token }}"
+          cf_zone: ${{ secrets.cloudflare_zone }}
+          cf_auth: ${{ secrets.cloudflare_api_token }}
