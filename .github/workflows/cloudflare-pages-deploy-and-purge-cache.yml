@@ -41,6 +41,8 @@ jobs:
           accountId: ${{ secrets.cloudflare_account_id }}
           command: pages deploy build --project-name=${{ inputs.cloudflare_project_name }}
           gitHubToken: ${{ secrets.gh_token }}
+        env:
+          CF_PAGES_COMMIT_SHA: ${{ github.sha }}
 
       - uses: nathanvaughn/actions-cloudflare-purge@master
         if: inputs.purge_cache == true
