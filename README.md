@@ -26,11 +26,15 @@ The following workflow will execute the action each workday at 7:30.
 name: Auto merge dependabot pull requests
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "30 7 * * 1-5"
+  pull_request_target:
+    types: [opened, synchronize, reopened]
 
 jobs:
   auto-merge-dependabot:
+    if: github.event_name != 'pull_request_target' || github.event.pull_request.user.login == 'dependabot[bot]'
     uses: manuelvanrijn/reusable_github_action_workflows/.github/workflows/auto-merge-dependabot.yml@main
     secrets:
       personal_access_token: ${{ secrets.PAT_TOKEN }}

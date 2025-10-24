@@ -20,9 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: |
-          gh pr list --author "dependabot[bot]" --search "status:pending" --json number --jq '.[] | .number' | while read i; do
-            gh pr review $i --approve --body "@dependabot merge"
-            sleep 0.2 # looks like we have to sleep a bit or dependabot isn't picking up the comment
+          gh pr list --author "dependabot[bot]" --json number,statusCheckRollup,mergeable --jq '.[] | select(.statusCheckRollup | length > 0 and all(.[]; .conclusion == "SUCCESS")) | select(.mergeable == "MERGEABLE") | .number' | while read i; do
+            echo "Processing PR #$i"
+
+            # Approve the PR
+            if gh pr review $i --approve; then
+              echo "✓ Approved PR #$i"
+            else
+              echo "⚠ Failed to approve PR #$i, continuing..."
+            fi
+
+            # Try to merge the PR, continue on failure
+            if gh pr merge $i --squash; then
+              echo "✓ Merged PR #$i"
+            else
+              echo "⚠ Failed to merge PR #$i, will retry later"
+            fi
+
+            echo "---"
           done
         env:
           GH_TOKEN: ${{ secrets.personal_access_token }}
