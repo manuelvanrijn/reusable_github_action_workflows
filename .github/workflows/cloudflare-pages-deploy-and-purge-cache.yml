@@ -44,8 +44,12 @@ jobs:
         env:
           CF_PAGES_COMMIT_SHA: ${{ github.sha }}
 
-      - uses: nathanvaughn/actions-cloudflare-purge@master
+      - name: Purge Cloudflare cache
         if: inputs.purge_cache == true
-        with:
-          cf_zone: ${{ secrets.cloudflare_zone }}
-          cf_auth: ${{ secrets.cloudflare_api_token }}
+        run: |
+          echo "🧹 Purge Cloudflare cache..."
+          curl https://api.cloudflare.com/client/v4/zones/${{ secrets.cloudflare_zone }}/purge_cache \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer ${{ secrets.cloudflare_api_token }}" \
+            -d '{"purge_everything": true}'
+          echo "✅ Cloudflare cache has been purged"
