@@ -18,7 +18,7 @@ jobs:
     name: Approve and merge pending pull requests
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           gh pr list --author "dependabot[bot]" --json number,statusCheckRollup,mergeable --jq '.[] | select(.statusCheckRollup | length > 0 and all(.[]; .conclusion == "SUCCESS")) | select(.mergeable == "MERGEABLE") | .number' | while read i; do
             echo "Processing PR #$i"
